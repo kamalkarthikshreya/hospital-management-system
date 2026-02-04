@@ -21,19 +21,18 @@ app.use(express.json());
 
 // Allowed domains
 const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "https://healthcare-system-kamal.vercel.app", // ⭐ Your LIVE frontend
+  "https://healthcare-system-kamal.vercel.app"
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, mobile apps, curl)
+
+      // allow Postman / server-to-server requests
       if (!origin) return callback(null, true);
 
       if (!allowedOrigins.includes(origin)) {
-        return callback(new Error("CORS not allowed for this origin"));
+        return callback(new Error("CORS not allowed"));
       }
 
       return callback(null, true);
