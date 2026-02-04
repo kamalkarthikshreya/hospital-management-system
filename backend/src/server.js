@@ -26,10 +26,15 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: true,   // ⭐ automatically reflects request origin
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://healthcare-system-kamal.vercel.app",
+    ],
     credentials: true,
   })
 );
+
 
 /* ================= HEALTH CHECK ================= */
 
