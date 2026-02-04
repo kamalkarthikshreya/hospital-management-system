@@ -21,16 +21,24 @@ app.use(express.json());
 
 // Allowed domains
 const allowedOrigins = [
-  "https://healthcare-system-kamal.vercel.app"
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://healthcare-system-kamal.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://healthcare-system-kamal.vercel.app",
-    ],
+    origin: function (origin, callback) {
+
+      // allow requests with no origin (Postman, mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS blocked: Unauthorized origin"));
+      }
+    },
     credentials: true,
   })
 );
