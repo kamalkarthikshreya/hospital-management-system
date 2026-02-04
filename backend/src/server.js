@@ -7,23 +7,42 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import ehrRoutes from "./routes/ehrRoutes.js";
+
 dotenv.config();
 
 const app = express();
 
 /* ================= MIDDLEWARE ================= */
 
-// ALWAYS first
+// Parse JSON FIRST
 app.use(express.json());
+
+/* ================= CORS (VERY IMPORTANT) ================= */
+
+// Allowed domains
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://healthcare-system-kamal.vercel.app", // ⭐ Your LIVE frontend
+];
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      if (!allowedOrigins.includes(origin)) {
+        return callback(new Error("CORS not allowed for this origin"));
+      }
+
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
 
-/* ================= HEALTH ================= */
+/* ================= HEALTH CHECK ================= */
 
 app.get("/api/health", (req, res) => {
   res.json({
@@ -37,33 +56,33 @@ app.get("/api/health", (req, res) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.log("❌ Mongo error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 /* ================= ROUTES ================= */
 
-// ⭐ CLEAN ROUTE DESIGN
-/* ================= ROUTES ================= */
-
-// This handles /api/dashboard-stats
-app.use("/api", analyticsRoutes); 
-
-// This handles /api/analytics/doctor (for the charts)
-app.use("/api/analytics", analyticsRoutes); 
-
-app.use("/api/dashboard", dashboardRoutes);
+// Auth routes
 app.use("/api/auth", authRoutes);
+
+// Dashboard
+app.use("/api/dashboard", dashboardRoutes);
+
+// Analytics (only mount once)
+app.use("/api/analytics", analyticsRoutes);
+
+// EHR
 app.use("/api/ehr", ehrRoutes);
+
 /* ================= ERROR HANDLER ================= */
 
 app.use((err, req, res, next) => {
   console.error("🔥 Server Error:", err);
 
   res.status(500).json({
-    message: "Internal Server Error",
+    message: err.message || "Internal Server Error",
   });
 });
 
-/* ================= START ================= */
+/* ================= SERVER START ================= */
 
 const PORT = process.env.PORT || 5000;
 
