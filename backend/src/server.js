@@ -26,17 +26,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-
-      // allow Postman / server-to-server requests
-      if (!origin) return callback(null, true);
-
-      if (!allowedOrigins.includes(origin)) {
-        return callback(new Error("CORS not allowed"));
-      }
-
-      return callback(null, true);
-    },
+    origin: true,   // ⭐ automatically reflects request origin
     credentials: true,
   })
 );
