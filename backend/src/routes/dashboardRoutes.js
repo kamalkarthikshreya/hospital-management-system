@@ -1,5 +1,5 @@
 import express from "express";
-import EHR from "../models/EHR.js";   // adjust name if different
+import EHR from "../models/ehr.js";   // adjust name if different
 import Patient from "../models/user.js";
 
 const router = express.Router();

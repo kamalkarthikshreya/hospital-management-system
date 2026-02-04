@@ -1,5 +1,5 @@
 import express from "express";
-import EHR from "../models/EHR.js";
+import EHR from "../models/ehr.js";
 import { protect, authorizeRoles } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
